@@ -24,6 +24,16 @@
    'ContT', you keep the final result type to @()@ (which is what
    'Managed' recommends with its 'runManaged' function).
 
+   As an example using 'Managed', this function will copy the contents
+   of two files into a third.:
+
+   > copyBoth :: FilePath -> FilePath -> FilePath -> IO ()
+   > copyBoth inF1 inF2 outF = runManaged $ do
+   >   bs1 <- withBinaryFileContents inF1
+   >   bs2 <- withBinaryFileContents inF2
+   >   writeBinaryFile outF bs1
+   >   appendBinaryFile outF bs2
+
  -}
 module Streaming.With.Lifted
   ( Withable (..)
