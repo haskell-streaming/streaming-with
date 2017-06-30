@@ -41,14 +41,14 @@ module Streaming.With.Lifted
   ) where
 
 import           Data.ByteString.Streaming (ByteString)
-import           Streaming.With            (appendBinaryFile, writeBinaryFile)
 import qualified Streaming.With            as W
 
-import Control.Monad.Catch      (MonadMask, bracket)
-import Control.Monad.IO.Class   (MonadIO)
-import Control.Monad.Managed    (Managed, managed)
-import Control.Monad.Trans.Cont (ContT(..))
-import System.IO                (Handle, IOMode)
+import Control.Monad.Catch       (MonadMask, bracket)
+import Control.Monad.IO.Class    (MonadIO, liftIO)
+import Control.Monad.Managed     (Managed, managed)
+import Control.Monad.Trans.Class (lift)
+import Control.Monad.Trans.Cont  (ContT(..))
+import System.IO                 (Handle, IOMode)
 
 --------------------------------------------------------------------------------
 
@@ -68,15 +68,21 @@ class (MonadMask (WithMonad w), MonadIO (WithMonad w)) => Withable w where
 
   liftWith :: (forall r. (a -> WithMonad w r) -> WithMonad w r) -> w a
 
+  liftAction :: WithMonad w a -> w a
+
 instance Withable Managed where
   type WithMonad Managed = IO
 
   liftWith = managed
 
+  liftAction = liftIO
+
 instance (MonadMask m, MonadIO m) => Withable (ContT r m) where
   type WithMonad (ContT r m) = m
 
   liftWith = ContT
+
+  liftAction = lift
 
 --------------------------------------------------------------------------------
 
@@ -90,6 +96,14 @@ withFile fp md = liftWith (W.withFile fp md)
 -- | A lifted variant of 'System.IO.withBinaryFile'.
 withBinaryFile :: (Withable w) => FilePath -> IOMode -> w Handle
 withBinaryFile fp md = liftWith (W.withBinaryFile fp md)
+
+-- | Write to the specified file.
+writeBinaryFile :: (Withable w) => FilePath -> ByteString (WithMonad w) r -> w r
+writeBinaryFile fp inp = liftAction (W.writeBinaryFile fp inp)
+
+-- | Append to the specified file.
+appendBinaryFile :: (Withable w) => FilePath -> ByteString (WithMonad w) r -> w r
+appendBinaryFile fp inp = liftAction (W.appendBinaryFile fp inp)
 
 -- | Apply a function to the contents of the file.
 --
