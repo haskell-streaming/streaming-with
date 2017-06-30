@@ -1,5 +1,4 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE FlexibleContexts, RankNTypes, TypeFamilies #-}
 
 {- |
    Module      : Streaming.With.Lifted
@@ -41,14 +40,15 @@ module Streaming.With.Lifted
   , bracket
   ) where
 
-import qualified Streaming.With as W
 import           Data.ByteString.Streaming (ByteString)
-import Streaming.With (writeBinaryFile, appendBinaryFile)
+import           Streaming.With            (appendBinaryFile, writeBinaryFile)
+import qualified Streaming.With            as W
 
-import Control.Monad.Catch    (MonadMask, bracket)
-import Control.Monad.Managed
-import Control.Monad.Trans.Cont
-import System.IO              (Handle, IOMode)
+import Control.Monad.Catch      (MonadMask, bracket)
+import Control.Monad.IO.Class   (MonadIO)
+import Control.Monad.Managed    (Managed, managed)
+import Control.Monad.Trans.Cont (ContT(..))
+import System.IO                (Handle, IOMode)
 
 --------------------------------------------------------------------------------
 
