@@ -44,16 +44,14 @@ correct approach.
 
 
 The [Bracket pattern] (also known as the _with..._ idiom, or a subset
-of continuation passing style) -- which predates [resourcet] and is
-[less powerful] -- allows for a convenient way to obtain and then
-guarantee the release of (possibly scarce) resources.  This can be
-further enhanced when dealing with nested usages of these with the use
-of either the [`ContT`] managed transformer or the [managed] library
-(where `Managed` -- or at least its safe variant -- is isomorphic to
-`ContT () IO`).
+of continuation passing style) allows for a convenient way to obtain
+and then guarantee the release of (possibly scarce) resources.  This
+can be further enhanced when dealing with nested usages of these with
+the use of either the [`ContT`] managed transformer or the [managed]
+library (where `Managed` -- or at least its safe variant -- is
+isomorphic to `ContT () IO`).
 
 [Bracket pattern]: https://wiki.haskell.org/Bracket_pattern
-[less powerful]: http://www.yesodweb.com/blog/2013/03/resourcet-overview
 
 The biggest downside of using `bracket` from the standard `base`
 library is that the types are not very convenient in the world of
@@ -69,12 +67,31 @@ exceptions).
 [exceptions]: http://hackage.haskell.org/package/exceptions
 [lifted-base]: http://hackage.haskell.org/package/lifted-base
 
-The disadvantage of using the bracket pattern is that it does not fit
-in as nicely in the function composition style that usage of streaming
-enables compared to other stream processing libraries.  Furthermore,
-without prompt finalisation the same "long running computation"
-[issue] is relevant.  For example, consider something that looks like
-this:
+Disadvantages
+-------------
+
+Whilst the bracket pattern is powerful, it does have some downsides of
+which you should be aware (specifically compared to [resourcet] which
+is the main alternative).
+
+First of all, independent of its usage with streaming, is that whilst
+`bracket` predates [resourcet], the latter is [more powerful].
+Whether this extra power is of use to you is up to you, but it does
+mean that you in effect have lots of nested resource management rather
+than just one overall resource control.
+
+[more powerful]: http://www.yesodweb.com/blog/2013/03/resourcet-overview
+
+The obvious disadvantage of using the bracket pattern is that it does
+not fit in as nicely in the function composition style that usage of
+streaming enables compared to other stream processing libraries.  This
+can be mitigated somewhat with using the lifted variants in this
+package which allows you to operate monadically (which still isn't as
+nice but may be preferable to lots of explicitly nested continuations).
+
+Furthermore, without prompt finalisation the same "long running
+computation" [issue] is relevant.  For example, consider something
+that looks like this:
 
 ```haskell
 withBinaryFile "myFile" ReadMode $
