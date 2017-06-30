@@ -57,6 +57,12 @@ import System.IO              (Handle, IOMode)
 --   The constraints are common ones found throughout this module, and
 --   as such incorporated into this class to avoid repetition in all
 --   the type signatures.
+--
+--   It is highly recommended that you do /not/ try and layer extra
+--   transformers on top of this; the intent of this class is just to
+--   make writing all the underlying continuations in a nicer fashion
+--   without explicit nesting, rather than as the basis of lower-level
+--   code.
 class (MonadMask (WithMonad w), MonadIO (WithMonad w)) => Withable w where
   type WithMonad w :: * -> *
 
