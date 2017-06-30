@@ -5,7 +5,27 @@ streaming-with
 
 > with/bracket-style idioms for use with [streaming]
 
+This library provides resource management for the [streaming]
+ecosystem of libraries using bracketed continuations.
+
 [streaming]: http://hackage.haskell.org/package/streaming
+
+Currently, these only contain file-handling utilities; if you can
+think of any more functions that fit in here please let me know!
+
+There are two ways of using this library:
+
+1. Explicitly pass around the continuations using `Streaming.With`.
+
+2. If you have a lot of nested continuations, you may prefer using
+   `Streaming.With.Lifted` with either [`ContT`] or [managed]; these
+   will allow you to pass around the parameters to the continuations.
+
+[`ContT`]: http://hackage.haskell.org/packages/archive/transformers/latest/doc/html/Control-Monad-Trans-Cont.html#v:ContT
+[managed]: http://hackage.haskell.org/package/managed
+
+Motivation
+----------
 
 The streaming library has some usages of `MonadResource` from the
 [resourcet] package to try and perform resource allocation; in
@@ -34,8 +54,6 @@ of either the [`ContT`] managed transformer or the [managed] library
 
 [Bracket pattern]: https://wiki.haskell.org/Bracket_pattern
 [less powerful]: http://www.yesodweb.com/blog/2013/03/resourcet-overview
-[`ContT`]: http://hackage.haskell.org/packages/archive/transformers/latest/doc/html/Control-Monad-Trans-Cont.html#v:ContT
-[managed]: http://hackage.haskell.org/package/managed
 
 The biggest downside of using `bracket` from the standard `base`
 library is that the types are not very convenient in the world of
