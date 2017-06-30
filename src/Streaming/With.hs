@@ -16,15 +16,19 @@ module Streaming.With
   , writeBinaryFile
   , appendBinaryFile
   , withBinaryFileContents
+    -- ** Re-exports
+    -- $reexports
+  , MonadMask
+  , bracket
   ) where
 
 import           Data.ByteString.Streaming (ByteString)
 import qualified Data.ByteString.Streaming as B
-import           Streaming
 
-import Control.Monad.Catch (MonadMask, bracket)
-import System.IO           (Handle, IOMode(..), hClose, openBinaryFile,
-                            openFile)
+import Control.Monad.Catch    (MonadMask, bracket)
+import Control.Monad.IO.Class (MonadIO, liftIO)
+import System.IO              (Handle, IOMode(..), hClose, openBinaryFile,
+                               openFile)
 
 --------------------------------------------------------------------------------
 
@@ -55,3 +59,16 @@ appendBinaryFile fp = withBinaryFile fp AppendMode . flip B.hPut
 withBinaryFileContents :: (MonadMask m, MonadIO m, MonadIO n) => FilePath
                           -> (ByteString n () -> m r) -> m r
 withBinaryFileContents fp f = withBinaryFile fp ReadMode (f . B.hGetContents)
+
+--------------------------------------------------------------------------------
+
+{- $reexports
+
+These may assist in writing your own bracket-style functions.
+
+Note that not everything is re-exported: for example, 'Handle' isn't
+re-exported for use with 'withFile' as it's unlikely that you will
+write another wrapper around it, and furthermore it wouldn't be a
+common enough extension to warrant it.
+
+-}
