@@ -44,7 +44,7 @@ module Streaming.With.Lifted
   , writeBinaryFile
   , appendBinaryFile
   , withBinaryFileContents
-    -- ** Re-exports
+    -- * Re-exports
     -- $reexports
   , MonadMask
   , bracket
