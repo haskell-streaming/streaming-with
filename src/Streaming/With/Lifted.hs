@@ -78,7 +78,7 @@ import System.IO                 (Handle, IOMode)
 --   make writing all the underlying continuations in a nicer fashion
 --   without explicit nesting, rather than as the basis of lower-level
 --   code.
-class (MonadMask (WithMonad w), MonadIO (WithMonad w)) => Withable w where
+class (Monad w, MonadMask (WithMonad w), MonadIO (WithMonad w)) => Withable w where
   type WithMonad w :: * -> *
 
   liftWith :: (forall r. (a -> WithMonad w r) -> WithMonad w r) -> w a
