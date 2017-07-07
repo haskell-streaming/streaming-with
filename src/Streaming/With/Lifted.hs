@@ -44,6 +44,11 @@ module Streaming.With.Lifted
   , writeBinaryFile
   , appendBinaryFile
   , withBinaryFileContents
+    -- ** Temporary files
+  , withSystemTempFile
+  , withTempFile
+  , withSystemTempDirectory
+  , withTempDirectory
     -- * Re-exports
     -- $reexports
   , MonadMask
@@ -122,6 +127,75 @@ appendBinaryFile fp inp = liftAction (W.appendBinaryFile fp inp)
 --   required output type (e.g. remove transformer).
 withBinaryFileContents :: (Withable w, MonadIO n) => FilePath -> w (ByteString n ())
 withBinaryFileContents fp = liftWith (W.withBinaryFileContents fp)
+
+--------------------------------------------------------------------------------
+
+-- | Create and use a temporary file in the system standard temporary
+--   directory.
+--
+--   Behaves exactly the same as 'withTempFile', except that the
+--   parent temporary directory will be that returned by
+--   'System.IO.Temp.getCanonicalTemporaryDirectory'.
+--
+--   @since 0.1.1.0
+withSystemTempFile :: (Withable w)
+                      => String -- ^ File name template.  See
+                                --   'System.IO.Temp.openTempFile'.
+                      -> w (FilePath, Handle)
+withSystemTempFile template = liftWith (W.withSystemTempFile template)
+
+-- | Use a temporary filename that doesn't already exist.
+--
+--   Creates a new temporary file inside the given directory, making
+--   use of the template. The temp file is deleted after use. For
+--   example:
+--
+--   > withTempFile "src" "sdist." >>= \(tmpFile, hFile) -> ...
+--
+--   The @tmpFile@ will be file in the given directory, e.g.
+--   @src/sdist.342@.
+--
+--   @since 0.1.1.0
+withTempFile :: (Withable w)
+             => FilePath -- ^ Temp dir to create the file in
+             -> String   -- ^ File name template.  See
+                         --   'System.IO.Temp.openTempFile'.
+             -> w (FilePath, Handle)
+withTempFile dir template = liftWith (W.withTempFile dir template)
+
+-- | Create and use a temporary directory in the system standard
+--   temporary directory.
+--
+--   Behaves exactly the same as 'withTempDirectory', except that the
+--   parent temporary directory will be that returned by
+--   'System.IO.Temp.getCanonicalTemporaryDirectory'.
+--
+--   @since 0.1.1.0
+withSystemTempDirectory :: (Withable w)
+                           => String -- ^ Directory name template. See
+                                     --   'System.IO.Temp.openTempFile'.
+                           -> w FilePath
+withSystemTempDirectory template = liftWith (W.withSystemTempDirectory template)
+
+-- | Create and use a temporary directory.
+--
+--   Creates a new temporary directory inside the given directory,
+--   making use of the template. The temp directory is deleted after
+--   use. For example:
+--
+--   > withTempDirectory "src" "sdist." >>= \tmpDir -> ...
+--
+--   The @tmpDir@ will be a new subdirectory of the given directory, e.g.
+--   @src/sdist.342@.
+--
+--   @since 0.1.1.0
+withTempDirectory :: (Withable w)
+                     => FilePath -- ^ Temp directory to create the
+                                 --   directory in
+                     -> String   -- ^ Directory name template. See
+                                 --   'System.IO.Temp.openTempFile'.
+                     -> w FilePath
+withTempDirectory dir template = liftWith (W.withTempDirectory dir template)
 
 --------------------------------------------------------------------------------
 

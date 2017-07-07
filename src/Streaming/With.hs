@@ -16,6 +16,13 @@ module Streaming.With
   , writeBinaryFile
   , appendBinaryFile
   , withBinaryFileContents
+    -- ** Temporary files
+  , withSystemTempFile
+  , withTempFile
+    -- *** Re-exports
+    -- $tempreexports
+  , withSystemTempDirectory
+  , withTempDirectory
     -- * Re-exports
     -- $reexports
   , MonadMask
@@ -25,10 +32,13 @@ module Streaming.With
 import           Data.ByteString.Streaming (ByteString)
 import qualified Data.ByteString.Streaming as B
 
-import Control.Monad.Catch    (MonadMask, bracket)
-import Control.Monad.IO.Class (MonadIO, liftIO)
-import System.IO              (Handle, IOMode(..), hClose, openBinaryFile,
-                               openFile)
+import           Control.Monad.Catch    (MonadMask, bracket)
+import           Control.Monad.IO.Class (MonadIO, liftIO)
+import           System.IO              (Handle, IOMode(..), hClose,
+                                         openBinaryFile, openFile)
+import           System.IO.Temp         (withSystemTempDirectory,
+                                         withTempDirectory)
+import qualified System.IO.Temp         as T
 
 --------------------------------------------------------------------------------
 
@@ -59,6 +69,58 @@ appendBinaryFile fp = withBinaryFile fp AppendMode . flip B.hPut
 withBinaryFileContents :: (MonadMask m, MonadIO m, MonadIO n) => FilePath
                           -> (ByteString n () -> m r) -> m r
 withBinaryFileContents fp f = withBinaryFile fp ReadMode (f . B.hGetContents)
+
+--------------------------------------------------------------------------------
+
+-- | /This is 'T.withSystemTempFile' from the @temporary@ package with
+--   the continuation re-structured to only take one argument./
+--
+--   Create and use a temporary file in the system standard temporary
+--   directory.
+--
+--   Behaves exactly the same as 'withTempFile', except that the
+--   parent temporary directory will be that returned by
+--   'T.getCanonicalTemporaryDirectory'.
+--
+--   @since 0.1.1.0
+withSystemTempFile :: (MonadIO m, MonadMask m)
+                   => String -- ^ File name template.  See 'T.openTempFile'
+                   -> ((FilePath, Handle) -> m r)
+                   -> m r
+withSystemTempFile template = T.withSystemTempFile template . curry
+
+-- | /This is 'T.withTempFile' from the @temporary@ package with
+--   the continuation re-structured to only take one argument./
+--
+--   Use a temporary filename that doesn't already exist.
+--
+--   Creates a new temporary file inside the given directory, making
+--   use of the template. The temp file is deleted after use. For
+--   example:
+--
+--   > withTempFile "src" "sdist." $ \(tmpFile, hFile) -> ...
+--
+--   The @tmpFile@ will be file in the given directory, e.g.
+--   @src/sdist.342@.
+--
+--   @since 0.1.1.0
+withTempFile :: (MonadIO m, MonadMask m)
+             => FilePath -- ^ Temp dir to create the file in
+             -> String   -- ^ File name template.  See
+                         --   'T.openTempFile'.
+             -> ((FilePath, Handle) -> m r)
+             -> m r
+withTempFile dir template = T.withTempFile dir template . curry
+
+{- $tempreexports
+
+These functions are re-exported from the
+<http://hackage.haskell.org/package/temporary temporary> package as-is
+as their structure already matches those found here.
+
+@since 0.1.1.0
+
+-}
 
 --------------------------------------------------------------------------------
 
