@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts, RankNTypes, TypeFamilies #-}
+{-# LANGUAGE FlexibleContexts, FlexibleInstances, RankNTypes, TypeFamilies #-}
 
 {- |
    Module      : Streaming.With.Lifted
@@ -37,6 +37,8 @@
  -}
 module Streaming.With.Lifted
   ( Withable (..)
+  , RunWithable (..)
+  , within
     -- * File-handling
   , withFile
   , withBinaryFile
@@ -60,9 +62,9 @@ import qualified Streaming.With            as W
 
 import Control.Monad.Catch       (MonadMask, bracket)
 import Control.Monad.IO.Class    (MonadIO, liftIO)
-import Control.Monad.Managed     (Managed, managed)
+import Control.Monad.Managed     (Managed, managed, runManaged)
 import Control.Monad.Trans.Class (lift)
-import Control.Monad.Trans.Cont  (ContT(..))
+import Control.Monad.Trans.Cont  (ContT(..), runContT)
 import System.IO                 (Handle, IOMode)
 
 --------------------------------------------------------------------------------
@@ -98,6 +100,42 @@ instance (MonadMask m, MonadIO m) => Withable (ContT r m) where
   liftWith = ContT
 
   liftAction = lift
+
+-- | Safely run the provided continuation.
+--
+--   A result of type '()' is required to ensure no resources are
+--   leaked.
+--
+--   Note that you cannot write something like:
+--
+--   > copyBoth :: FilePath -> FilePath -> FilePath -> IO ()
+--   > copyBoth inF1 inF2 outF = runWith $ do
+--   >   bs1 <- withBinaryFileContents inF1
+--   >   bs2 <- withBinaryFileContents inF2
+--   >   writeBinaryFile outF bs1
+--   >   appendBinaryFile outF bs2
+--
+--   as the 'RunWithable' instance cannot be inferred.  As such, you
+--   will need to specify a type somewhere.
+--
+--   @since 0.2.1.0
+class (Withable w) => RunWithable w where
+  runWith :: w () -> WithMonad w ()
+
+instance RunWithable Managed where
+  runWith = runManaged
+
+instance (MonadMask m, MonadIO m) => RunWithable (ContT () m) where
+  runWith = flip runContT return
+
+-- | A helper function to run a computation within a lifted resource
+--   management expression.
+--
+--   @within w f = w >>= liftAction . f@
+--
+--   @since 0.2.1.0
+within :: (Withable w) => w a -> (a -> WithMonad w b) -> w b
+within w f = w >>= liftAction . f
 
 --------------------------------------------------------------------------------
 

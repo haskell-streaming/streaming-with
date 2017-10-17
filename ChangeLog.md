@@ -1,5 +1,11 @@
 # Revision history for streaming-with
 
+## 0.2.1.0 -- 2017-10-
+
+* Add the `RunWithable` class.
+
+* Add the `within` function for use with `Withable`.
+
 ## 0.2.0.0 -- 2017-07-07
 
 * Add `Monad w` constraint to `Withable w`
