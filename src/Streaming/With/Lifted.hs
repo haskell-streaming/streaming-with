@@ -39,6 +39,7 @@ module Streaming.With.Lifted
   ( Withable (..)
   , RunWithable (..)
   , within
+  , liftActionIO
     -- * File-handling
   , withFile
   , withBinaryFile
@@ -136,6 +137,15 @@ instance (MonadMask m, MonadIO m) => RunWithable (ContT () m) where
 --   @since 0.2.1.0
 within :: (Withable w) => w a -> (a -> WithMonad w b) -> w b
 within w f = w >>= liftAction . f
+
+-- | A helper function for the common case of lifting an @IO@
+--   computation into a @Withable@.
+--
+--   @liftActionIO = liftAction . liftIO@.
+--
+--   @since 0.2.1.0
+liftActionIO :: (Withable w) => IO a -> w a
+liftActionIO = liftAction . liftIO
 
 --------------------------------------------------------------------------------
 

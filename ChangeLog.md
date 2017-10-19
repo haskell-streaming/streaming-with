@@ -4,7 +4,8 @@
 
 * Add the `RunWithable` class.
 
-* Add the `within` function for use with `Withable`.
+* Add the `within` and `liftActionIO` functions for use with
+  `Withable`.
 
 ## 0.2.0.0 -- 2017-07-07
 
