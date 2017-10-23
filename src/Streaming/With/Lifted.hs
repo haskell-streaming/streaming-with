@@ -61,7 +61,8 @@ module Streaming.With.Lifted
 import           Data.ByteString.Streaming (ByteString)
 import qualified Streaming.With            as W
 
-import Control.Monad.Catch       (MonadMask, bracket)
+import Control.Exception         (Exception)
+import Control.Monad.Catch       (MonadMask, bracket, throwM)
 import Control.Monad.IO.Class    (MonadIO, liftIO)
 import Control.Monad.Managed     (Managed, managed, runManaged)
 import Control.Monad.Trans.Class (lift)
@@ -146,6 +147,15 @@ within w f = w >>= liftAction . f
 --   @since 0.2.1.0
 liftActionIO :: (Withable w) => IO a -> w a
 liftActionIO = liftAction . liftIO
+
+-- | A helper function for the common case of throwing an exception in
+--   the underlying monad.
+--
+--   @liftThrow = liftAction . throwM@.
+--
+--   @since 0.2.1.0
+liftThrow :: (Withable w, Exception e) => e -> w a
+liftThrow = liftAction . throwM
 
 --------------------------------------------------------------------------------
 
