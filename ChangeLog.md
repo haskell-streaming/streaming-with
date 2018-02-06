@@ -1,6 +1,6 @@
 # Revision history for streaming-with
 
-## 0.2.1.0 -- 2017-10-
+## 0.2.1.0 -- 2018-02-06
 
 * Add the `RunWithable` class.
 
