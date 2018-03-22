@@ -1,5 +1,5 @@
 name:                streaming-with
-version:             0.2.1.0
+version:             0.2.1.1
 synopsis:            with/bracket-style idioms for use with streaming
 description:
     This package provides the foundations for a continuation-based
@@ -23,7 +23,7 @@ library
   exposed-modules:     Streaming.With
                      , Streaming.With.Lifted
   build-depends:       base == 4.*
-                     , exceptions >= 0.6 && < 0.9
+                     , exceptions >= 0.6 && < 0.11
                      , managed == 1.0.*
                      , streaming-bytestring >= 0.1.0.3 && < 0.2
                      , temporary >= 1.2.1 && < 1.3

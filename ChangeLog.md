@@ -1,5 +1,9 @@
 # Revision history for streaming-with
 
+## 0.2.1.1 -- 2018-03-23
+
+* Bump exceptions dependency
+
 ## 0.2.1.0 -- 2018-02-06
 
 * Add the `RunWithable` class.
