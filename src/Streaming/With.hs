@@ -72,8 +72,8 @@ withBinaryFileContents fp f = withBinaryFile fp ReadMode (f . B.hGetContents)
 
 --------------------------------------------------------------------------------
 
--- | /This is 'T.withSystemTempFile' from the @temporary@ package with
---   the continuation re-structured to only take one argument./
+-- | /This is 'T.withSystemTempFile' from the @temporary@ package/
+--   /with the continuation re-structured to only take one argument./
 --
 --   Create and use a temporary file in the system standard temporary
 --   directory.
@@ -89,8 +89,8 @@ withSystemTempFile :: (MonadIO m, MonadMask m)
                    -> m r
 withSystemTempFile template = T.withSystemTempFile template . curry
 
--- | /This is 'T.withTempFile' from the @temporary@ package with
---   the continuation re-structured to only take one argument./
+-- | /This is 'T.withTempFile' from the @temporary@ package with the/
+--   /continuation re-structured to only take one argument./
 --
 --   Use a temporary filename that doesn't already exist.
 --
