@@ -1,5 +1,9 @@
 # Revision history for streaming-with
 
+## 0.2.2.0 -- 2018-05-23
+
+* Actually export `liftThrow` from within `Streaming.With.Lifted`.
+
 ## 0.2.1.1 -- 2018-03-23
 
 * Bump exceptions dependency

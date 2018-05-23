@@ -40,6 +40,7 @@ module Streaming.With.Lifted
   , RunWithable (..)
   , within
   , liftActionIO
+  , liftThrow
     -- * File-handling
   , withFile
   , withBinaryFile
@@ -153,7 +154,7 @@ liftActionIO = liftAction . liftIO
 --
 --   @liftThrow = liftAction . throwM@.
 --
---   @since 0.2.1.0
+--   @since 0.2.2.0
 liftThrow :: (Withable w, Exception e) => e -> w a
 liftThrow = liftAction . throwM
 
