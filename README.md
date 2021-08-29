@@ -1,7 +1,7 @@
 streaming-with
 ==============
 
-[![Hackage](https://img.shields.io/hackage/v/streaming-with.svg)](https://hackage.haskell.org/package/streaming-with) [![Build Status](https://travis-ci.org/haskell-streaming/streaming-with.svg)](https://travis-ci.org/haskell-streaming/streaming-with)
+[![Hackage](https://img.shields.io/hackage/v/streaming-with.svg)](https://hackage.haskell.org/package/streaming-with) [![Build Status](https://github.com/haskell-streaming/streaming-with/actions/workflows/haskell-ci.yml/badge.svg)](https://github.com/haskell-streaming/streaming-with/actions/workflows/haskell-ci.yml)
 
 > with/bracket-style idioms for use with [streaming]
 
