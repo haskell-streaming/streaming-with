@@ -1,5 +1,9 @@
 # Revision history for streaming-with
 
+## 0.3.0.0 -- 2021-08-29
+
+* Support newer version of `streaming-bytestring` and GHC.
+
 ## 0.2.2.1 -- 2018-05-23
 
 * Bump temporary dependency
