@@ -100,7 +100,7 @@ instance Withable Managed where
 instance (MonadMask m, MonadIO m) => Withable (ContT r m) where
   type WithMonad (ContT r m) = m
 
-  liftWith = ContT
+  liftWith a = ContT a
 
   liftAction = lift
 
