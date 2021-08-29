@@ -1,4 +1,7 @@
-{-# LANGUAGE FlexibleContexts, FlexibleInstances, RankNTypes, TypeFamilies #-}
+{-# LANGUAGE FlexibleContexts  #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE RankNTypes        #-}
+{-# LANGUAGE TypeFamilies      #-}
 
 {- |
    Module      : Streaming.With.Lifted
@@ -59,16 +62,16 @@ module Streaming.With.Lifted
   , bracket
   ) where
 
-import           Data.ByteString.Streaming (ByteString)
+import           Streaming.ByteString      (ByteStream)
 import qualified Streaming.With            as W
 
-import Control.Exception         (Exception)
-import Control.Monad.Catch       (MonadMask, bracket, throwM)
-import Control.Monad.IO.Class    (MonadIO, liftIO)
-import Control.Monad.Managed     (Managed, managed, runManaged)
-import Control.Monad.Trans.Class (lift)
-import Control.Monad.Trans.Cont  (ContT(..), runContT)
-import System.IO                 (Handle, IOMode)
+import           Control.Exception         (Exception)
+import           Control.Monad.Catch       (MonadMask, bracket, throwM)
+import           Control.Monad.IO.Class    (MonadIO, liftIO)
+import           Control.Monad.Managed     (Managed, managed, runManaged)
+import           Control.Monad.Trans.Class (lift)
+import           Control.Monad.Trans.Cont  (ContT (..), runContT)
+import           System.IO                 (Handle, IOMode)
 
 --------------------------------------------------------------------------------
 
@@ -163,7 +166,7 @@ liftThrow = liftAction . throwM
 -- | A lifted variant of 'System.IO.withFile'.
 --
 --   You almost definitely don't want to use this; instead, use
---   'withBinaryFile' in conjunction with "Data.ByteString.Streaming".
+--   'withBinaryFile' in conjunction with "Streaming.ByteString".
 withFile :: (Withable w) => FilePath -> IOMode -> w Handle
 withFile fp md = liftWith (W.withFile fp md)
 
@@ -172,19 +175,19 @@ withBinaryFile :: (Withable w) => FilePath -> IOMode -> w Handle
 withBinaryFile fp md = liftWith (W.withBinaryFile fp md)
 
 -- | Write to the specified file.
-writeBinaryFile :: (Withable w) => FilePath -> ByteString (WithMonad w) r -> w r
+writeBinaryFile :: (Withable w) => FilePath -> ByteStream (WithMonad w) r -> w r
 writeBinaryFile fp inp = liftAction (W.writeBinaryFile fp inp)
 
 -- | Append to the specified file.
-appendBinaryFile :: (Withable w) => FilePath -> ByteString (WithMonad w) r -> w r
+appendBinaryFile :: (Withable w) => FilePath -> ByteStream (WithMonad w) r -> w r
 appendBinaryFile fp inp = liftAction (W.appendBinaryFile fp inp)
 
 -- | Apply a function to the contents of the file.
 --
 --   Note that a different monadic stack is allowed for the
---   'ByteString' input, as long as it later gets resolved to the
+--   'ByteStream' input, as long as it later gets resolved to the
 --   required output type (e.g. remove transformer).
-withBinaryFileContents :: (Withable w, MonadIO n) => FilePath -> w (ByteString n ())
+withBinaryFileContents :: (Withable w, MonadIO n) => FilePath -> w (ByteStream n ())
 withBinaryFileContents fp = liftWith (W.withBinaryFileContents fp)
 
 --------------------------------------------------------------------------------
